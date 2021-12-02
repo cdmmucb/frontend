@@ -3,11 +3,12 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical">
+
     <TextView
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
         android:text="Correo" />
 
     <EditText
@@ -21,10 +22,10 @@
         android:inputType="text" />
 
     <TextView
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
         android:text="Password" />
 
     <EditText
@@ -36,21 +37,24 @@
         android:layout_marginRight="4dp"
         android:layout_marginBottom="16dp"
         android:fontFamily="sans-serif" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <Button
             android:id="@+id/buttonCancelLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancelar"
-            android:layout_margin="10dp"/>
+            android:layout_margin="10dp"
+            android:text="Cancelar" />
+
         <Button
             android:id="@+id/buttonConfirmLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Iniciar Sesión"
-            android:layout_margin="10dp"/>
+            android:layout_margin="10dp"
+            android:text="Iniciar Sesión" />
 
     </LinearLayout>
 </LinearLayout>

@@ -28,12 +28,17 @@ import java.util.*
 
 lateinit var Estado: TextView
 lateinit var carrito: MutableList<Film>
+
 class MainActivity : AppCompatActivity() {
 
     var radioGroup: RadioGroup? = null
     lateinit var radioButton: RadioButton
     private lateinit var buttonBusqueda: Button
     lateinit var etBusquedaQ: EditText
+    val url = "http://192.168.1.2:8080/rentals"
+    var list = mutableListOf<Film>()
+    lateinit var adapter: CustomAdapter
+
     override fun onBackPressed() {
         super.onBackPressed()
         val intent = Intent(this, LoginActivity::class.java)
@@ -41,74 +46,131 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
-    val url = "http://192.168.1.2:8080/rentals"
-    var list = mutableListOf<Film>()
-
-    lateinit var adapter: CustomAdapter
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         var context: Context = this
+
         Estado = findViewById(R.id.textEstado)
-        Estado.visibility=View.GONE
-        carrito = mutableListOf()
-
-        val values = getSharedPreferences("values", MODE_PRIVATE)
-        val pais: String? = values.getString("pais","default")
-        if(values.contains("userid")){
-            //do nothing
-        }else{
-            val editor = values.edit()
-            editor.putInt("userid", -1 )
-            editor.putString("nombres", "nada" )
-            editor.putString("apellidos", "nada" )
-            editor.putString("correo", "nada" )
-            editor.commit()
-        }
-
         etBusquedaQ = findViewById(R.id.etBusquedaQ)
         radioGroup = findViewById(R.id.radioGroup1)
         buttonBusqueda = findViewById(R.id.submitButton)
+        val btnCarrito: Button = findViewById(R.id.btnCarrito)
+        val btnLogin: Button = findViewById(R.id.btnLoginMain)
+
+        Estado.visibility = View.GONE
+
+        carrito = mutableListOf()
+
+        val values = getSharedPreferences("values", MODE_PRIVATE)
+        for (i in 1..4) {
+            if (values.getInt("inventoryId" + i, -1).equals(-1)) {
+                //DO NOTHING
+            } else {
+                carrito.clear()
+                carrito.add(
+                    Film(
+                        values.getInt("inventoryId" + i, -1),
+                        values.getBoolean("disponible" + i, FALSE),
+                        values.getInt("id" + i, -1),
+                        values.getString("title" + i, "f").toString(),
+                        values.getString("description" + i, "f"),
+                    )
+                )
+            }
+        }
+        val pais: String? = values.getString("pais", "default")
+        if(values.getInt("userId",-1).equals(-1)){
+            //DO NOTHING
+        }else{
+            btnLogin.text="Cerrar Sesión"
+        }
+
+        btnLogin.setOnClickListener {
+            if (btnLogin.text.equals("Iniciar Sesión")) {
+                showDialogLogin(btnLogin)
+            } else {
+                val editor = values.edit()
+                editor.putInt("userId", -1)
+                editor.putString("nombres", "nada")
+                editor.putString("apellidos", "nada")
+                editor.putString("correo", "nada")
+                editor.commit()
+                btnLogin.text = "Iniciar Sesión"
+                Toast.makeText(this, "Sesión cerrada", Toast.LENGTH_SHORT).show()
+            }
+
+        }
+
+        btnCarrito.setOnClickListener {
+            if (carrito.size == 0) {
+                Toast.makeText(this, "El carrito no puede estar vacio", Toast.LENGTH_SHORT).show()
+            } else {
+                val values = getSharedPreferences("values", MODE_PRIVATE)
+                val editor = values.edit()
+                for (i in 1..4) {
+                    if (carrito.size >= i) {
+                        editor.putInt("inventoryId" + i, carrito.get(i - 1).inventoryId)
+                        editor.putBoolean("disponible" + i, carrito.get(i - 1).disponible)
+                        editor.putInt("id" + i, carrito.get(i - 1).filmId)
+                        editor.putString("title" + i, carrito.get(i - 1).title)
+                        editor.putString("description" + i, carrito.get(i - 1).description)
+                    } else {
+                        editor.putInt("inventoryId" + i, -1)
+                        editor.putBoolean("disponible" + i, FALSE)
+                        editor.putInt("id" + i, -1)
+                        editor.putString("title" + i, "f")
+                        editor.putString("description" + i, "f")
+                    }
+                }
+                editor.commit()
+                val intent = Intent(this, PrimerCarrito::class.java)
+                startActivity(intent)
+                finish()
+            }
+        }
+
         buttonBusqueda.setOnClickListener {
             list.clear()
             val selectedOption: Int = radioGroup!!.checkedRadioButtonId
             radioButton = findViewById(selectedOption)
-            Toast.makeText(baseContext, radioButton.text, Toast.LENGTH_SHORT).show()
             var auxiur: String? = null
-            if(radioButton.text.toString().equals("Actor")){
-                auxiur=url+"/"+pais+"/actor/"+etBusquedaQ.text.toString()
-            }else{
-                auxiur=url+"/"+pais+"/titulo/"+etBusquedaQ.text.toString()
+            if (radioButton.text.toString().equals("Actor")) {
+                auxiur = url + "/" + pais + "/actor/" + etBusquedaQ.text.toString()
+            } else {
+                auxiur = url + "/" + pais + "/titulo/" + etBusquedaQ.text.toString()
             }
             val requestInicial: JsonArrayRequest = object : JsonArrayRequest(
-                Method.GET, auxiur,null,
+                Method.GET, auxiur, null,
                 Response.Listener { response: JSONArray ->
                     try {
                         for (i in 0 until response.length()) {
                             val film = response.getJSONObject(i)
-                            list.add(Film(
-                                film.getInt("inventoryId"),
-                                film.getBoolean("disponible"),
-                                film.getInt("filmId"),
-                                film.getString("title"),
-                                film.getString("description")))
+                            list.add(
+                                Film(
+                                    film.getInt("inventoryId"),
+                                    film.getBoolean("disponible"),
+                                    film.getInt("filmId"),
+                                    film.getString("title"),
+                                    film.getString("description")
+                                )
+                            )
                         }
                         adapter.notifyDataSetChanged()
-                        Toast.makeText(this, "dice", Toast.LENGTH_SHORT).show()
                     } catch (e: JSONException) {
                         e.printStackTrace()
                         Toast.makeText(this, "exception", Toast.LENGTH_SHORT).show()
                     }
-                    if(list.size>0){
-                        Estado.visibility=View.GONE
-                    }else{
-                        Estado.visibility=View.VISIBLE
+                    if (list.size > 0) {
+                        Estado.visibility = View.GONE
+                    } else {
+                        Estado.visibility = View.VISIBLE
                     }
                 },
                 Response.ErrorListener { error ->
                     Toast.makeText(this, "error", Toast.LENGTH_SHORT).show()
-                    Log.e("error is ", "" + error) }) {
+                    Log.e("error is ", "" + error)
+                }) {
                 @Throws(AuthFailureError::class)
                 override fun getHeaders(): Map<String, String> {
                     val params: MutableMap<String, String> = HashMap()
@@ -118,7 +180,6 @@ class MainActivity : AppCompatActivity() {
             }
             val queueInicial = Volley.newRequestQueue(applicationContext)
             queueInicial.add(requestInicial)
-///////////////////////////////////////////////////////////////////////////////////////////////////
         }
 
         val RecyclerView: RecyclerView = findViewById(R.id.recyclerView)
@@ -133,61 +194,32 @@ class MainActivity : AppCompatActivity() {
 
         adapter = CustomAdapter(list)
         RecyclerView.adapter = adapter
-        val btnCarrito: Button = findViewById(R.id.btnCarrito)
-        btnCarrito.setOnClickListener {
-            if(carrito.size==0) {
-                Toast.makeText(this, "El carrito no puede estar vacio", Toast.LENGTH_SHORT).show()
-            }else{
-            val values = getSharedPreferences("values", MODE_PRIVATE)
-            val editor = values.edit()
-            for (i in 1..4) {
-                if (carrito.size>=i) {
-                    editor.putInt("inventoryId" + i, carrito.get(i - 1).inventoryId)
-                    editor.putBoolean("disponible" + i, carrito.get(i - 1).disponible)
-                    editor.putInt("id" + i, carrito.get(i - 1).filmId)
-                    editor.putString("title" + i, carrito.get(i - 1).title)
-                    editor.putString("description" + i, carrito.get(i - 1).description)
-                } else {
-                    editor.putInt("inventoryId" + i, -1)
-                    editor.putBoolean("disponible" + i, FALSE)
-                    editor.putInt("id" + i, -1)
-                    editor.putString("title" + i, "f")
-                    editor.putString("description" + i, "f")
-                }
-            }
-            editor.commit()
-            val intent = Intent(this, PrimerCarrito::class.java)
-            startActivity(intent)
-            finish()
-        }
-        }
 
-        val btnLogin: Button = findViewById(R.id.btnLoginMain)
-        btnLogin.setOnClickListener {
-            showDialogLogin()
-        }
-
+        list.clear()
         val request: JsonArrayRequest = object : JsonArrayRequest(
-            Method.GET, url+"/"+pais,null,
+            Method.GET, url + "/" + pais, null,
             Response.Listener { response: JSONArray ->
                 try {
                     for (i in 0 until response.length()) {
                         val film = response.getJSONObject(i)
-                        list.add(Film(
-                            film.getInt("inventoryId"),
-                            film.getBoolean("disponible"),
-                            film.getInt("filmId"),
-                            film.getString("title"),
-                            film.getString("description")))
+                        list.add(
+                            Film(
+                                film.getInt("inventoryId"),
+                                film.getBoolean("disponible"),
+                                film.getInt("filmId"),
+                                film.getString("title"),
+                                film.getString("description")
+                            )
+                        )
                     }
                     adapter.notifyDataSetChanged()
                 } catch (e: JSONException) {
                     e.printStackTrace()
                 }
-                if(list.size>0){
-                    Estado.visibility=View.GONE
-                }else{
-                    Estado.visibility=View.VISIBLE
+                if (list.size > 0) {
+                    Estado.visibility = View.GONE
+                } else {
+                    Estado.visibility = View.VISIBLE
                 }
             },
             Response.ErrorListener { error -> Log.e("error is ", "" + error) }) {
@@ -199,74 +231,62 @@ class MainActivity : AppCompatActivity() {
             }
         }
         val queue = Volley.newRequestQueue(applicationContext)
-        request.setRetryPolicy(
-            DefaultRetryPolicy(
-                15000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
-            )
-        )
         queue.add(request)
-///////////////////////////////////////////////////////////////////////////////////////////////////
     }
 
-    fun showDialogLogin() {
-    val dialog = Dialog(this)
-    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-    dialog.setCancelable(false)
-    dialog.setContentView(R.layout.dialog_login)
-    var etUser: EditText = dialog.findViewById(R.id.etUserLogin)
-    var etPassword: EditText = dialog.findViewById(R.id.etPasswordLogin)
-    val btnConfirmLogin: Button = dialog.findViewById(R.id.buttonConfirmLogin)
-    val btnCancelLogin: Button = dialog.findViewById(R.id.buttonCancelLogin)
-    btnConfirmLogin.setOnClickListener {
-        dialog.dismiss()
+    fun showDialogLogin(btnSesion: TextView) {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.dialog_login)
 
-        ///////////////////////////////////////////////////////////////////
-        val jsonOblectref2logi: JsonObjectRequest = object : JsonObjectRequest(
-            Method.GET, "http://192.168.1.2:8080/users/"+etUser.text.toString(), null,
-            Response.Listener { response ->
-                val auxUsuario = response
-                System.out.println(auxUsuario)
-                if(auxUsuario.isNull("customerId")){
-                    Toast.makeText(
-                        this,"No se pudo iniciar sesión. Intente nuevamente", Toast.LENGTH_SHORT).show()
-                }else {
-                    val values = getSharedPreferences("values", MODE_PRIVATE)
-                    val editor = values.edit()
-                    editor.putInt("userId", auxUsuario.getInt("customerId"))
-                    editor.putString("nombres", auxUsuario.getString("firstName"))
-                    editor.putString("apellidos", auxUsuario.getString("lastName"))
-                    editor.putString("correo", auxUsuario.getString("email"))
-                    editor.commit()
+        var etUser: EditText = dialog.findViewById(R.id.etUserLogin)
+        val btnConfirmLogin: Button = dialog.findViewById(R.id.buttonConfirmLogin)
+        val btnCancelLogin: Button = dialog.findViewById(R.id.buttonCancelLogin)
+
+        btnConfirmLogin.setOnClickListener {
+            dialog.dismiss()
+            val jsonOblectref2logi: JsonObjectRequest = object : JsonObjectRequest(
+                Method.GET, "http://192.168.1.2:8080/users/" + etUser.text.toString(), null,
+                Response.Listener { response ->
+                    val auxUsuario = response
+                    System.out.println(auxUsuario)
+                    if (auxUsuario.isNull("customerId")) {
+                        Toast.makeText(this, "No se pudo iniciar sesión. Intente nuevamente", Toast.LENGTH_SHORT).show()
+                    } else {
+                        val values = getSharedPreferences("values", MODE_PRIVATE)
+                        val editor = values.edit()
+                        editor.putInt("userId", auxUsuario.getInt("customerId"))
+                        editor.putString("nombres", auxUsuario.getString("firstName"))
+                        editor.putString("apellidos", auxUsuario.getString("lastName"))
+                        editor.putString("correo", auxUsuario.getString("email"))
+                        editor.commit()
+                        Toast.makeText(this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
+                        btnSesion.text = "Cerrar Sesión"
+                    }
+                },
+                Response.ErrorListener { error ->
+                    Toast.makeText(this, "Error" + error, Toast.LENGTH_LONG).show()
+                }) {
+                @Throws(AuthFailureError::class)
+                override fun getHeaders(): Map<String, String> {
+                    val params: MutableMap<String, String> = HashMap()
+                    params["Content-Type"] = "application/json"
+                    return params
                 }
-                              },
-            Response.ErrorListener { error -> Toast.makeText(this, "Error"+error, Toast.LENGTH_LONG).show() }) {
-            @Throws(AuthFailureError::class)
-            override fun getHeaders(): Map<String, String> {
-                val params: MutableMap<String, String> = HashMap()
-                params["Content-Type"] = "application/json"
-                return params
             }
+            val queue2ref2logi = Volley.newRequestQueue(it.context)
+            queue2ref2logi.add(jsonOblectref2logi)
         }
-        val queue2ref2logi = Volley.newRequestQueue(it.context)
-        jsonOblectref2logi.setRetryPolicy(
-            DefaultRetryPolicy(
-                15000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
-            )
-        )
-        queue2ref2logi.add(jsonOblectref2logi)
-////////////////////////////////////////////////////////////////////////////
+
+        btnCancelLogin.setOnClickListener {
+            dialog.dismiss()
+            val toast = Toast.makeText(this, "Cancelado", Toast.LENGTH_SHORT)
+            toast.show()
+        }
+
+        dialog.show()
     }
-    btnCancelLogin.setOnClickListener {
-        dialog.dismiss()
-        val toast = Toast.makeText(this, "Cancelado", Toast.LENGTH_SHORT)
-        toast.show()
-    }
-    dialog.show()
-}
 
     class CustomAdapter(var dataSet: MutableList<Film>) :
         RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
@@ -282,7 +302,6 @@ class MainActivity : AppCompatActivity() {
             var ocultoDescripcion: TextView
 
             init {
-                // Define click listener for the ViewHolder's View.
                 titulo = view.findViewById(R.id.itemTitulo)
                 disponible = view.findViewById(R.id.textDisponible)
                 imagen = view.findViewById(R.id.filmImage)
@@ -291,19 +310,27 @@ class MainActivity : AppCompatActivity() {
                 quitar = view.findViewById(R.id.buttonQuitar)
                 ocultoId = view.findViewById(R.id.ocultoId)
                 ocultoDescripcion = view.findViewById(R.id.ocultoDescripcion)
-                ocultoId.visibility=View.GONE
-                ocultoDescripcion.visibility=View.GONE
-                agotado.visibility = View.GONE
-                quitar.visibility = View.GONE
 
                 agregar.setOnClickListener {
-                    if(carrito.size==4){
-                        val toastNo = Toast.makeText(view.context, "Adicion cancelada. No puede alquilar mas de 4 peliculas a la vez", Toast.LENGTH_SHORT)
+                    if (carrito.size == 4) {
+                        val toastNo = Toast.makeText(
+                            view.context,
+                            "Adicion cancelada. No puede alquilar mas de 4 peliculas a la vez",
+                            Toast.LENGTH_SHORT
+                        )
                         toastNo.show()
-                    }else{
+                    } else {
                         quitar.visibility = View.VISIBLE
                         agregar.visibility = View.GONE
-                        carrito.add(Film(Integer.parseInt(ocultoId.text.toString()),TRUE,Integer.parseInt(ocultoId.text.toString()),titulo.text.toString(),ocultoDescripcion.text.toString()))
+                        carrito.add(
+                            Film(
+                                Integer.parseInt(ocultoId.text.toString()),
+                                TRUE,
+                                Integer.parseInt(ocultoId.text.toString()),
+                                titulo.text.toString(),
+                                ocultoDescripcion.text.toString()
+                            )
+                        )
                     }
                 }
 
@@ -311,7 +338,7 @@ class MainActivity : AppCompatActivity() {
                     quitar.visibility = View.GONE
                     agregar.visibility = View.VISIBLE
                     for (i in carrito.indices) {
-                        if(carrito[i].inventoryId == Integer.parseInt(ocultoId.text.toString())){
+                        if (carrito[i].inventoryId == Integer.parseInt(ocultoId.text.toString())) {
                             carrito.removeAt(i);
                         }
                     }
@@ -328,23 +355,20 @@ class MainActivity : AppCompatActivity() {
             return ViewHolder(view)
         }
 
-
-        // Replace the contents of a view (invoked by the layout manager)
         override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-            // Get element from your dataset at this position and replace the
-            // contents of the view with that element
             viewHolder.disponible.text = dataSet[position].disponible.toString()
             viewHolder.titulo.text = dataSet[position].title
             viewHolder.ocultoId.setText(dataSet[position].inventoryId.toString())
             viewHolder.ocultoDescripcion.setText(dataSet[position].description)
+
             viewHolder.ocultoDescripcion.visibility = View.GONE
             viewHolder.ocultoId.visibility = View.GONE
             viewHolder.quitar.visibility = View.GONE
             viewHolder.disponible.visibility = View.GONE
-            if (viewHolder.disponible.text.toString().equals("0")){
+            if (viewHolder.disponible.text.toString().equals("false")) {
                 viewHolder.agregar.visibility = View.GONE
                 viewHolder.agotado.visibility = View.VISIBLE
-            }else{
+            } else {
                 viewHolder.agregar.visibility = View.VISIBLE
                 viewHolder.agotado.visibility = View.GONE
             }

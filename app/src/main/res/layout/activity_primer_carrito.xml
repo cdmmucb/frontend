@@ -4,49 +4,41 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PrimerCarrito"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".PrimerCarrito">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:weightSum="2">
+
         <Button
-            android:layout_marginLeft="10dp"
             android:id="@+id/btnAtrasPrimer"
-            android:layout_gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
             android:layout_weight="1"
             android:text="Inicio" />
 
         <Button
-            android:layout_marginLeft="10dp"
             android:id="@+id/btnLoginPrimer"
-            android:layout_gravity="center"
-            android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
             android:text="Iniciar Sesión" />
     </LinearLayout>
 
     <TextView
-        android:layout_marginLeft="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="10dp"
         android:text="Carrito de películas"
-        android:layout_gravity="center"
-        android:textSize="20sp"
-       />
-
-    <TextView
-        android:layout_marginLeft="10dp"
-        android:layout_width="wrap_content"
-        android:textSize="18sp"
-        android:layout_gravity="center"
-        android:layout_height="wrap_content"
-        android:text="Has agregado las siguientes películas a tu carrito"
-         />
+        android:textSize="20sp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -55,70 +47,69 @@
         android:weightSum="2">
 
         <LinearLayout
-            android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Fecha de devolucion"
-            android:layout_gravity="center"
-            android:textSize="16sp"
-            />
-
-        <DatePicker
-            android:id="@+id/datePicker"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:datePickerMode="spinner"
-            android:calendarViewShown="false"/>
-     />
-        </LinearLayout>
-        <LinearLayout
             android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Fecha de devolucion"
+                android:textSize="16sp" />
+
+            <DatePicker
+                android:id="@+id/datePicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:calendarViewShown="false"
+                android:datePickerMode="spinner" />
+            />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_gravity="center">
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:orientation="vertical">
             />
 
             <TextView
-                android:layout_marginLeft="10dp"
                 android:id="@+id/tvTotal"
                 android:layout_width="wrap_content"
-                android:textSize="18sp"
-                android:layout_gravity="center"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="Total: 0 USD."
-                android:visibility="gone"
-                />
+                android:textSize="16sp"
+                android:visibility="gone" />
+
             <TextView
-                android:layout_marginLeft="10dp"
                 android:id="@+id/tvDescuento"
                 android:layout_width="wrap_content"
-                android:textSize="18sp"
-                android:layout_gravity="center"
                 android:layout_height="wrap_content"
-                android:text="DSCTO: 0 USD"
-                android:visibility="gone"
-                 />
-            <Button
-                android:layout_marginLeft="10dp"
-                android:id="@+id/btnAlFinal"
                 android:layout_gravity="center"
+                android:text="DSCTO: 0 USD"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btnAlFinal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Comprar"
-                android:visibility="gone"/>
+                android:layout_gravity="center"
+                android:text="Alquilar"
+                android:visibility="gone" />
+
             <TextView
                 android:id="@+id/mensajeFecha"
                 android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Fecha no valida"
                 android:lines="5"
                 android:maxLines="5"
+                android:text="Fecha no valida"
 
                 />
 
@@ -126,6 +117,13 @@
 
 
     </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="10dp"
+        android:text="Películas en tu carrito:"
+        android:textSize="18sp" />
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewPrimerCarrito"
         android:layout_width="match_parent"

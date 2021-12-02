@@ -11,7 +11,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONObject
-
+import java.lang.Boolean.FALSE
 
 class LoginActivity : AppCompatActivity() {
 
@@ -21,19 +21,33 @@ class LoginActivity : AppCompatActivity() {
 
         val canada: Button = findViewById(R.id.btnCanada)
         val australia: Button = findViewById(R.id.btnAustralia)
+
+        val values = getSharedPreferences("values", MODE_PRIVATE)
+        val editor = values.edit()
+        editor.putInt("userId",-1)
+        editor.putString("nombres", "nada")
+        editor.putString("apellidos", "nada")
+        editor.putString("correo", "nada")
+        for(i in 1..4){
+            editor.putInt("inventoryId"+i,-1)
+            editor.putBoolean("disponible"+i,FALSE)
+            editor.putInt("id"+i,-1)
+            editor.putString("title"+i, "f")
+            editor.putString("description"+i, "f")
+        }
+        editor.putFloat("total",0.0F)
+        editor.putFloat("descuento",0.0F)
+        editor.putString("rentalDate","default")
+
         canada.setOnClickListener {
-                    val values = getSharedPreferences("values", MODE_PRIVATE)
-                    val editor = values.edit()
-                    editor.putString("pais", "canada")
-                    editor.commit()
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
-                    finish()
-            }
+            editor.putString("pais", "canada")
+            editor.commit()
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
 
         australia.setOnClickListener {
-            val values = getSharedPreferences("values", MODE_PRIVATE)
-            val editor = values.edit()
             editor.putString("pais", "australia")
             editor.commit()
             val intent = Intent(this, MainActivity::class.java)
@@ -41,6 +55,5 @@ class LoginActivity : AppCompatActivity() {
             finish()
         }
 
-        }
-
     }
+}

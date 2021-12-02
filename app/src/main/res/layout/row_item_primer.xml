@@ -4,48 +4,52 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:weightSum="6">
+
     <ImageView
         android:id="@+id/filmImagePrimer"
-        android:layout_height="100dp"
-        android:layout_width="100dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_gravity="center"
-        android:src="@android:drawable/ic_menu_revert"
         android:layout_weight="2"
-        />
+        android:src="@android:drawable/ic_menu_revert" />
+
     <LinearLayout
-        android:layout_weight="3"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
+        android:layout_weight="3"
         android:orientation="vertical">
         />
+
         <TextView
             android:id="@+id/filmId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="a" />
+
         <TextView
             android:id="@+id/filmTitulo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="nombre"
-            android:textStyle="bold"/>
+            android:layout_gravity="center"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/filmDescripcion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxLines="10"
+            android:layout_gravity="center"
             android:lines="5"
-            android:text="descripcionaaaaaaaaaaaaaaaaaaaaaaa" />
+            android:maxLines="5"
+            android:text="descripcion" />
     </LinearLayout>
 
     <Button
-        android:layout_weight="1"
-        android:layout_gravity="center"
         android:id="@+id/buttonQuitarPrimer"
         android:layout_width="125dp"
         android:layout_height="wrap_content"
-        android:text="Quitar película"
-        />
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:text="Quitar película" />
 
 </LinearLayout>

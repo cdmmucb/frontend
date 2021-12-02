@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:weightSum="6">
+    <ImageView
+        android:id="@+id/filmImageFinal"
+        android:layout_height="100dp"
+        android:layout_width="100dp"
+        android:layout_gravity="center"
+        android:src="@android:drawable/ic_menu_revert"
+        android:layout_weight="2"
+        />
+    <LinearLayout
+        android:layout_weight="4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        />
+        <TextView
+            android:id="@+id/filmIdFinal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="a" />
+        <TextView
+            android:id="@+id/filmTituloFinal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="nombre"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/filmDescripcionFinal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="10"
+            android:lines="5"
+            android:text="descripcionaaaaaaaaaaaaaaaaaaaaaaa" />
+    </LinearLayout>
+
+</LinearLayout>

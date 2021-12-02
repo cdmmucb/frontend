@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <ImageView
+        android:id="@+id/filmImage"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:src="@android:drawable/ic_menu_revert"
+        />
+        <TextView
+            android:id="@+id/itemTitulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="adasdasdasd"
+            android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/textDisponible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="A" />
+
+        <TextView
+            android:id="@+id/textAgotado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Agotado" />
+    <TextView
+        android:id="@+id/ocultoId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="a" />
+    <TextView
+        android:id="@+id/ocultoDescripcion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="a" />
+
+
+
+        <Button
+            android:layout_gravity="center"
+            android:id="@+id/buttonAgregar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Agregar al carrito" />
+
+        <Button
+            android:layout_gravity="center"
+            android:id="@+id/buttonQuitar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quitar del carrito"
+            />
+
+</LinearLayout>

@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.AuthFailureError
-import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
@@ -63,11 +62,11 @@ class MainActivity : AppCompatActivity() {
         carrito = mutableListOf()
 
         val values = getSharedPreferences("values", MODE_PRIVATE)
+        carrito.clear()
         for (i in 1..4) {
             if (values.getInt("inventoryId" + i, -1).equals(-1)) {
                 //DO NOTHING
             } else {
-                carrito.clear()
                 carrito.add(
                     Film(
                         values.getInt("inventoryId" + i, -1),
@@ -232,6 +231,29 @@ class MainActivity : AppCompatActivity() {
         }
         val queue = Volley.newRequestQueue(applicationContext)
         queue.add(request)
+
+        //
+        if(carrito.size>0){
+            val x: Int = RecyclerView.getChildCount()
+            var viewOcultoId: TextView
+            var viewButtonQuitar: Button
+            var viewButtonAgregar: Button
+            /*for(obj in carrito){
+                var ite = 0
+                var logrado = 0
+                while (logrado == 0 || ite < x) {
+                    viewOcultoId = RecyclerView.getChildAt(ite).findViewById(R.id.ocultoId) as TextView
+                    if(obj.inventoryId == viewOcultoId.text.toString().toInt()){
+                        viewButtonQuitar = RecyclerView.getChildAt(ite).findViewById(R.id.buttonQuitar) as Button
+                        viewButtonAgregar = RecyclerView.getChildAt(ite).findViewById(R.id.buttonAgregar) as Button
+                        viewButtonQuitar.visibility = View.VISIBLE
+                        viewButtonAgregar.visibility = View.GONE
+                        logrado = 1
+                    }
+                    ++ite
+                }
+            }*/
+        }
     }
 
     fun showDialogLogin(btnSesion: TextView) {

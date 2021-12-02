@@ -1,5 +1,6 @@
 package com.example.diagnos
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.os.Build
@@ -244,13 +245,16 @@ class PrimerCarrito : AppCompatActivity() {
             viewHolder.quitar.setOnClickListener {
                 auxiPrimerCarritoList = mutableListOf<Film>()
                 auxiPrimerCarritoList.clear()
-                auxiPrimerCarritoList = listPrimerCarrito
                 listPrimerCarrito.forEachIndexed { index, element ->
                     if (element.inventoryId != Integer.parseInt(viewHolder.ocultoId.text.toString())) {
-                        auxiPrimerCarritoList.remove(element)
+                        auxiPrimerCarritoList.add(element)
+                    }else{
+                            var YOLO = viewHolder.itemView.context as PrimerCarrito
+                            YOLO.removeFilm(element.inventoryId)
                     }
                 }
-                listPrimerCarrito = auxiPrimerCarritoList
+                listPrimerCarrito.clear()
+                listPrimerCarrito.addAll(auxiPrimerCarritoList)
                 notifyDataSetChanged()
 
                 totalAux = daysBetween * listPrimerCarrito.size * 0.99F
@@ -337,6 +341,21 @@ class PrimerCarrito : AppCompatActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    fun removeFilm(inventoryId: Int) {
+        val values = getSharedPreferences("values", MODE_PRIVATE)
+        val editor = values.edit()
+        for (i in 1..4) {
+            if (values.getInt("inventoryId" + i, -1).equals(inventoryId)) {
+                editor.putInt("inventoryId" + i, -1)
+                editor.putBoolean("disponible" + i, FALSE)
+                editor.putInt("id" + i, -1)
+                editor.putString("title" + i, "f")
+                editor.putString("description" + i, "f")
+            }
+        }
+        editor.commit()
     }
 
     fun daysBetween(startDate: Calendar, endDate: Calendar): Long {
